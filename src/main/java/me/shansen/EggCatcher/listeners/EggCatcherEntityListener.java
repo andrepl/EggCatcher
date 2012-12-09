@@ -36,10 +36,16 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.palmergames.bukkit.towny.object.Resident;
+import com.palmergames.bukkit.towny.object.TownBlock;
+import com.palmergames.bukkit.towny.object.TownyPermission;
+import com.palmergames.bukkit.towny.permissions.TownyPermissionSource;
+import com.palmergames.bukkit.towny.utils.PlayerCacheUtil;
+
 public class EggCatcherEntityListener implements Listener {
 
 	FileConfiguration config;
-	JavaPlugin plugin;
+	EggCatcher plugin;
 	private final Boolean usePermissions;
 	private final Boolean useCatchChance;
 	private final Boolean looseEggOnFail;
@@ -60,7 +66,7 @@ public class EggCatcherEntityListener implements Listener {
 	private final Boolean spawnChickenOnFail;
 	private final Boolean spawnChickenOnSuccess;
 
-	public EggCatcherEntityListener(JavaPlugin plugin) {
+	public EggCatcherEntityListener(EggCatcher plugin) {
 		this.config = plugin.getConfig();
 		this.plugin = plugin;
 		this.usePermissions = this.config.getBoolean("UsePermissions", true);
@@ -157,6 +163,14 @@ public class EggCatcherEntityListener implements Listener {
 				}
 			}
 
+			if (this.plugin.isUsingTowny()) {
+				boolean bUse = PlayerCacheUtil.getCachePermission(player, entity.getLocation(), 344, (byte)0, TownyPermission.ActionType.ITEM_USE);
+				if (!bUse) {
+					player.sendMessage(config.getString("Messages.RegionPermissionFail"));
+					return;
+				}
+			}
+			
 			if (this.useCatchChance) {
 				double catchChance = config.getDouble("CatchChance."
 						+ eggType.getFriendlyName());

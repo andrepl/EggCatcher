@@ -27,16 +27,22 @@ import me.shansen.EggCatcher.listeners.EggCatcherPlayerListener;
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.entity.*;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import com.palmergames.bukkit.towny.Towny;
+import com.palmergames.bukkit.towny.object.TownyUniverse;
 
 public class EggCatcher extends JavaPlugin {
 	Logger log = Logger.getLogger("Minecraft");
 
 	public static List<Egg> eggs = new ArrayList<Egg>();
 	public static Economy economy = null;
-
+	private Towny towny = null;
+	private boolean useTowny = false;
+	
 	public void onDisable() {
 		log.info(this.getDescription().getName() + " v"
 				+ this.getDescription().getVersion() + " is disabled!");
@@ -45,6 +51,7 @@ public class EggCatcher extends JavaPlugin {
 	public void onEnable() {
 		this.CheckConfigurationFile();
 		PluginManager pm = this.getServer().getPluginManager();
+		
 		log.info(this.getDescription().getName() + " v"
 				+ this.getDescription().getVersion() + " is enabled!");
 
@@ -62,6 +69,8 @@ public class EggCatcher extends JavaPlugin {
 				economy = economyProvider.getProvider();
 			}
 		}
+		
+		townyCheck();
 	}
 
 	public void CheckConfigurationFile() {
@@ -93,4 +102,21 @@ public class EggCatcher extends JavaPlugin {
 			this.reloadConfig();
 		}
 	}
+
+	public void townyCheck() {
+		Towny towny = (Towny)getServer().getPluginManager().getPlugin("Towny");
+		if (towny != null) {
+			useTowny = true;
+		}
+	}
+	
+	public boolean isUsingTowny() {
+		return useTowny;
+	}
+	
+	public TownyUniverse getTownyUniverse() {
+		return towny.getTownyUniverse();
+	}
+	
+	
 }
